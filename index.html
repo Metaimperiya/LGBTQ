@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌈 LGBTQ · Community & Dating</title>
+    <meta name="description" content="LGBTQ community, friendship, dating, communication and social connections.">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --bg: #070707;
+            --card: #111111;
+            --border: #232323;
+            --text: #ffffff;
+            --muted: #b7b7b7;
+            --rainbow: linear-gradient(90deg, #ff0055, #ff8800, #ffee00, #00ff99, #00bbff, #7744ff);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        /* ===== ШАПКА ===== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,.45);
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        .nav {
+            max-width: 1300px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .logo span {
+            background: var(--rainbow);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .menu {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .menu a:hover { color: #ff6b6b; }
+        .menu .btn-create {
+            background: var(--rainbow);
+            border: none;
+            color: #000;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .menu .btn-create:hover { transform: scale(1.05); }
+        .menu .btn-create.hidden { display: none; }
+
+        /* ===== ГЕРОЙ ===== */
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 20px 30px;
+            background: radial-gradient(circle at top, #2b0d45, transparent 40%),
+                        radial-gradient(circle at bottom, #001d3d, transparent 40%);
+        }
+        .hero-inner { max-width: 1000px; }
+        .hero h1 {
+            font-size: 52px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .gradient {
+            background: var(--rainbow);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 18px;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            background: var(--rainbow);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .btn:hover { transform: scale(1.04); }
+
+        /* ===== ОСОБЕННОСТИ ===== */
+        .section {
+            max-width: 1300px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+        .section-title {
+            font-size: 36px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .section-sub {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: var(--muted);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            transition: .3s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #ff6b6b;
+        }
+        .card h3 { margin-bottom: 8px; font-size: 20px; }
+        .card p { color: var(--muted); font-size: 14px; }
+
+        /* ===== ВИДЖЕТ ===== */
+        .widget-wrap {
+            max-width: 820px;
+            margin: 20px auto 40px;
+            padding: 0 16px;
+        }
+        .widget-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        .widget-header {
+            padding: 10px 16px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .widget-header .w-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .widget-header .w-title span { color: #ff6b6b; }
+        .widget-header .w-status {
+            font-size: 0.65rem;
+            color: #6bcb77;
+            background: rgba(107, 203, 119, 0.12);
+            padding: 2px 14px;
+            border-radius: 40px;
+            border: 1px solid rgba(107, 203, 119, 0.2);
+        }
+        .widget-body {
+            padding: 0;
+            min-height: 400px;
+        }
+        .widget-body #deepchat-widget {
+            min-height: 400px;
+        }
+
+        /* ===== МОДАЛКА СОЗДАНИЯ КОМНАТЫ ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: #1a1a2a;
+            padding: 28px;
+            border-radius: 24px;
+            max-width: 520px;
+            width: 100%;
+            border: 1px solid #333;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-box h2 {
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+        .modal-box .sub {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .modal-box input, .modal-box textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        .modal-box textarea { min-height: 60px; resize: vertical; }
+        .modal-box input:focus, .modal-box textarea:focus { border-color: #ff6b6b; }
+        .modal-box .btn-group-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .modal-box .btn-group-row input { margin-bottom: 0; flex: 1; }
+        .modal-box .btn-group-row .btn-remove {
+            background: #4a1a1a;
+            color: #ff6666;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .modal-box .add-btn {
+            background: #222;
+            color: #ff6b6b;
+            border: 1px solid #333;
+            border-radius: 30px;
+            padding: 4px 14px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+        .modal-box .btns-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .modal-box .btns-row button {
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            flex: 1;
+        }
+        .modal-box .btns-row .cancel {
+            background: #2a2a2a;
+            color: #aaa;
+        }
+        .modal-box .btns-row .cancel:hover { background: #3a3a3a; }
+        .modal-box .btns-row .save {
+            background: var(--rainbow);
+            color: #000;
+        }
+        .modal-box .btns-row .save:hover { opacity: 0.9; }
+        .modal-box .label-small {
+            color: #888;
+            font-size: 0.7rem;
+            margin: 6px 0 4px 0;
+        }
+
+        /* ===== ПОДВАЛ ===== */
+        .footer {
+            padding: 24px;
+            text-align: center;
+            border-top: 1px solid #1d1d1d;
+            color: #999;
+            font-size: 0.75rem;
+        }
+        .footer .heart {
+            color: #ff6b6b;
+            display: inline-block;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .section-title { font-size: 28px; }
+            .menu a { font-size: 12px; }
+            .hero { min-height: 50vh; padding: 70px 16px 30px; }
+            .grid { grid-template-columns: 1fr; }
+            .widget-wrap { padding: 0 8px; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 24px; }
+            .hero p { font-size: 15px; }
+            .btn { padding: 12px 24px; font-size: 14px; }
+            .logo { font-size: 16px; }
+            .menu .btn-create { font-size: 0.65rem; padding: 4px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ШАПКА ===== -->
+    <header>
+        <div class="nav">
+            <div class="logo"><span>LGBTQ</span> Community</div>
+            <div class="menu">
+                <a href="#">Главная</a>
+                <a href="#about">О нас</a>
+                <a href="#widget">Чат</a>
+                <button class="btn-create hidden" id="dcCreateBtnHeader" onclick="dcOpenCreateRoom()">➕ Создать комнату</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== ГЕРОЙ ===== -->
+    <section class="hero">
+        <div class="hero-inner">
+            <h1>Find Friends, <span class="gradient">Build Connections</span> And Join The Community</h1>
+            <p>Welcome place for communication, friendship, support and meaningful connections.</p>
+            <a href="#widget" class="btn">💬 Открыть чат</a>
+        </div>
+    </section>
+
+    <!-- ===== ОСОБЕННОСТИ ===== -->
+    <section class="section" id="about">
+        <h2 class="section-title">Why Join Our Community</h2>
+        <p class="section-sub">Connect with people, share experiences and discover new friendships.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>🏳️‍🌈 Friendship</h3>
+                <p>Meet people from different countries and backgrounds.</p>
+            </div>
+            <div class="card">
+                <h3>💬 Community</h3>
+                <p>Become part of a growing international network.</p>
+            </div>
+            <div class="card">
+                <h3>🌈 Communication</h3>
+                <p>Join discussions and discover new conversations.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ВИДЖЕТ ===== -->
+    <div class="widget-wrap" id="widget">
+        <div class="widget-card">
+            <div class="widget-header">
+                <div class="w-title">💬 <span>PrideChat</span> · Комнаты</div>
+                <div class="w-status">● онлайн</div>
+            </div>
+            <div class="widget-body">
+                <div id="deepchat-widget"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ПОДВАЛ ===== -->
+    <footer class="footer">
+        <p>Сделано с <span class="heart">❤️</span> для LGBTQ+ сообщества</p>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- ======  МОДАЛКА СОЗДАНИЯ КОМНАТЫ ====== -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="dcCreateModal">
+        <div class="modal-box">
+            <h2>📝 Создать комнату</h2>
+            <div class="sub">Заполните поля и отправьте на одобрение</div>
+            <input type="text" id="dcRoomName" placeholder="Название комнаты" maxlength="30">
+            <input type="text" id="dcMarquee" placeholder="Бегущая строка (заголовок)">
+            <textarea id="dcPostText" placeholder="Текст поста"></textarea>
+            <input type="url" id="dcLink" placeholder="Ссылка для превью (iframe)">
+
+            <div class="label-small">🔘 Кнопки (до 5 штук)</div>
+            <div id="dcButtonsContainer"></div>
+            <button class="add-btn" onclick="dcAddButtonField()">➕ Добавить кнопку</button>
+
+            <div class="btns-row">
+                <button class="cancel" onclick="dcCloseCreateModal()">Отмена</button>
+                <button class="save" onclick="dcSubmitRoom()">📤 Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ======  ВИДЖЕТ ====== -->
+    <!-- ============================================================ -->
+    <script>
+    (function() {
+        const root = document.getElementById('deepchat-widget');
+        if (!root) return;
+
+        // ===== FIREBASE =====
+        const config = {
+            apiKey: "AIzaSyC81Ow4VPAUcaQGAuJjhtA-OaR8hyqxCtI",
+            authDomain: "mychatapp-2c141.firebaseapp.com",
+            databaseURL: "https://mychatapp-2c141-default-rtdb.firebaseio.com",
+            projectId: "mychatapp-2c141",
+            storageBucket: "mychatapp-2c141.firebasestorage.app",
+            messagingSenderId: "857322151793",
+            appId: "1:857322151793:web:387599e9e6f9cf1454a0d0"
+        };
+        firebase.initializeApp(config);
+        const DB = firebase.database();
+
+        const SITE_ID = window.location.hostname.replace(/\./g, '_') || 'default_site';
+        let USER = localStorage.getItem('dc_user_' + SITE_ID) || '';
+        let IS_ADMIN = localStorage.getItem('dc_admin_' + SITE_ID) === 'true';
+        let CURRENT_ROOM = localStorage.getItem('dc_room_' + SITE_ID) || '';
+
+        if (!USER) {
+            const nick = prompt('👤 Ваше имя:');
+            if (nick && nick.trim()) {
+                USER = nick.trim();
+                if (USER.length > 24) { alert('Слишком длинное'); return; }
+                localStorage.setItem('dc_user_' + SITE_ID, USER);
+            }
+        }
+
+        // ================================================================
+        // ======  СОЗДАНИЕ КОМНАТЫ (ЧЕРЕЗ МОДАЛКУ) ======
+        // ================================================================
+        window.dcOpenCreateRoom = function() {
+            if (!IS_ADMIN) { alert('⛔ Только для админа!'); return; }
+            document.getElementById('dcCreateModal').classList.add('open');
+            document.getElementById('dcRoomName').value = '';
+            document.getElementById('dcMarquee').value = '';
+            document.getElementById('dcPostText').value = '';
+            document.getElementById('dcLink').value = '';
+            document.getElementById('dcButtonsContainer').innerHTML = '';
+            dcAddButtonField();
+        };
+
+        window.dcCloseCreateModal = function() {
+            document.getElementById('dcCreateModal').classList.remove('open');
+        };
+
+        window.dcAddButtonField = function(label = '', url = '') {
+            const container = document.getElementById('dcButtonsContainer');
+            const div = document.createElement('div');
+            div.className = 'btn-group-row';
+            div.innerHTML = `
+                <input class="btn-label" placeholder="Текст кнопки" value="${escapeHtml(label)}">
+                <input class="btn-url" placeholder="Ссылка" value="${escapeHtml(url)}">
+                <button class="btn-remove" onclick="dcRemoveButtonField(this)">✕</button>
+            `;
+            container.appendChild(div);
+        };
+
+        window.dcRemoveButtonField = function(btn) {
+            const group = btn.parentElement;
+            if (document.getElementById('dcButtonsContainer').children.length > 1) {
+                group.remove();
+            } else {
+                group.querySelector('.btn-label').value = '';
+                group.querySelector('.btn-url').value = '';
+            }
+        };
+
+        window.dcSubmitRoom = function() {
+            const name = document.getElementById('dcRoomName').value.trim();
+            const marquee = document.getElementById('dcMarquee').value.trim();
+            const text = document.getElementById('dcPostText').value.trim();
+            const link = document.getElementById('dcLink').value.trim();
+
+            if (!name) { alert('⚠️ Введите название комнаты'); return; }
+            if (name.length < 2) { alert('⚠️ Минимум 2 символа'); return; }
+
+            // Собираем кнопки
+            const buttons = [];
+            document.querySelectorAll('#dcButtonsContainer .btn-group-row').forEach(g => {
+                const label = g.querySelector('.btn-label').value.trim();
+                const url = g.querySelector('.btn-url').value.trim();
+                if (url) buttons.push({ label: label || '🔗 Перейти', url });
+            });
+
+            // Сохраняем комнату в Firebase
+            const roomData = {
+                name: name,
+                marquee: marquee || null,
+                postText: text || '📝 Новый пост',
+                link: link || null,
+                buttons: buttons,
+                createdAt: Date.now(),
+                createdBy: USER,
+                count: 0,
+                approved: true
+            };
+
+            DB.ref('sites/' + SITE_ID + '/rooms').push(roomData)
+                .then(() => {
+                    dcCloseCreateModal();
+                    alert('✅ Комната "' + name + '" создана!');
+                    dcLoadRooms();
+                    // Автоматически открываем комнату
+                    setTimeout(() => {
+                        // Находим последнюю созданную комнату и открываем её
+                        dcLoadRooms();
+                    }, 500);
+                })
+                .catch(err => alert('❌ ' + err.message));
+        };
+
+        // ================================================================
+        // ======  АДМИНКА ======
+        // ================================================================
+        function dcAdminLogin() {
+            const pwd = prompt('🏴‍☠️ Введите пароль админа:');
+            if (pwd === '12345') {
+                IS_ADMIN = true;
+                localStorage.setItem('dc_admin_' + SITE_ID, 'true');
+                document.getElementById('dcCreateBtnHeader').classList.remove('hidden');
+                alert('✅ Админ-режим включён!');
+                dcLoadRooms();
+            } else if (pwd !== null) {
+                alert('❌ Неверный пароль!');
+            }
+        }
+
+        // ================================================================
+        // ======  ВИДЖЕТ ======
+        // ================================================================
+        root.innerHTML = `
+            <style>
+                #deepchat-widget * { margin:0; padding:0; box-sizing:border-box; }
+                #deepchat-widget {
+                    display: block;
+                    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+                    background: transparent;
+                    color: #fff;
+                    width: 100%;
+                    min-height: 400px;
+                    position: relative;
+                }
+                #deepchat-widget .dc-topbar {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 8px 14px;
+                    background: rgba(0,0,0,0.3);
+                    border-bottom: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-topbar .dc-menu-btn {
+                    background: none;
+                    border: none;
+                    color: #fff;
+                    font-size: 1.3rem;
+                    cursor: pointer;
+                    padding: 0 4px;
+                }
+                #deepchat-widget .dc-topbar .dc-menu-btn:hover { color: #ff6b6b; }
+                #deepchat-widget .dc-topbar .dc-title {
+                    font-weight: 700;
+                    font-size: 1rem;
+                    color: #fff;
+                    cursor: pointer;
+                }
+                #deepchat-widget .dc-topbar .dc-title span { color: #ff6b6b; }
+                #deepchat-widget .dc-topbar .dc-user {
+                    margin-left: auto;
+                    font-size: 0.7rem;
+                    color: #999;
+                    background: rgba(255,255,255,0.06);
+                    padding: 2px 12px;
+                    border-radius: 40px;
+                    border: 1px solid rgba(255,255,255,0.06);
+                }
+
+                #deepchat-widget .dc-menu {
+                    position: fixed;
+                    top: 0;
+                    left: -280px;
+                    width: 260px;
+                    height: 100%;
+                    background: #12121a;
+                    border-right: 1px solid rgba(255,255,255,0.06);
+                    transition: left 0.3s;
+                    z-index: 1000;
+                    overflow-y: auto;
+                    padding: 14px 12px;
+                }
+                #deepchat-widget .dc-menu.open { left: 0; }
+                #deepchat-widget .dc-menu .dc-menu-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-menu .dc-menu-header span { color: #ff6b6b; font-weight: 700; }
+                #deepchat-widget .dc-menu .dc-menu-header button {
+                    background: none;
+                    border: none;
+                    color: #666;
+                    font-size: 1.2rem;
+                    cursor: pointer;
+                }
+                #deepchat-widget .dc-menu .dc-menu-header button:hover { color: #fff; }
+
+                #deepchat-widget .dc-menu .dc-user-block {
+                    margin: 10px 0;
+                    padding: 6px 10px;
+                    background: rgba(255,255,255,0.04);
+                    border-radius: 10px;
+                    border: 1px solid rgba(255,255,255,0.06);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                #deepchat-widget .dc-menu .dc-user-block .dc-avatar { font-size: 1.2rem; }
+                #deepchat-widget .dc-menu .dc-user-block .dc-name { font-weight: 600; font-size: 0.9rem; }
+                #deepchat-widget .dc-menu .dc-user-block .dc-status { font-size: 0.6rem; color: #666; }
+
+                #deepchat-widget .dc-menu .dc-room-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    margin-top: 8px;
+                }
+                #deepchat-widget .dc-menu .dc-room-list .dc-room {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 10px;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    color: #ccc;
+                    border: 1px solid transparent;
+                    transition: background 0.2s;
+                }
+                #deepchat-widget .dc-menu .dc-room-list .dc-room:hover {
+                    background: rgba(255,255,255,0.04);
+                    border-color: rgba(255,255,255,0.08);
+                }
+                #deepchat-widget .dc-menu .dc-room-list .dc-room.active {
+                    background: rgba(255, 107, 107, 0.08);
+                    border-color: rgba(255, 107, 107, 0.3);
+                }
+                #deepchat-widget .dc-menu .dc-room-list .dc-room .dc-rname { font-size: 0.85rem; }
+                #deepchat-widget .dc-menu .dc-room-list .dc-room .dc-rcount {
+                    margin-left: auto;
+                    font-size: 0.6rem;
+                    color: #555;
+                    background: rgba(255,255,255,0.04);
+                    padding: 0 10px;
+                    border-radius: 40px;
+                }
+                #deepchat-widget .dc-menu .dc-menu-footer {
+                    margin-top: 16px;
+                    padding-top: 10px;
+                    border-top: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-menu .dc-menu-footer .dc-create-btn {
+                    display: none;
+                    width: 100%;
+                    background: linear-gradient(135deg, #ff6b6b, #ff8c8c);
+                    border: none;
+                    color: #fff;
+                    padding: 6px 12px;
+                    border-radius: 40px;
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                }
+                #deepchat-widget .dc-menu .dc-menu-footer .dc-create-btn:hover { opacity: 0.9; }
+                #deepchat-widget .dc-menu .dc-menu-footer .dc-create-btn.show { display: block; }
+
+                #deepchat-widget .dc-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 999;
+                    display: none;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                }
+                #deepchat-widget .dc-overlay.show { display: block; opacity: 1; }
+
+                #deepchat-widget .dc-content {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 12px;
+                    min-height: 350px;
+                }
+
+                #deepchat-widget .dc-home {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 300px;
+                    text-align: center;
+                    padding: 20px;
+                }
+                #deepchat-widget .dc-home .dc-home-icon { font-size: 3rem; margin-bottom: 12px; }
+                #deepchat-widget .dc-home .dc-home-title {
+                    font-size: 1.3rem;
+                    font-weight: 800;
+                    color: #fff;
+                }
+                #deepchat-widget .dc-home .dc-home-title span { color: #ff6b6b; }
+                #deepchat-widget .dc-home .dc-home-sub {
+                    color: #777;
+                    font-size: 0.9rem;
+                    margin-top: 4px;
+                }
+                #deepchat-widget .dc-home .dc-home-rooms {
+                    margin-top: 16px;
+                    display: flex;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+                #deepchat-widget .dc-home .dc-home-rooms .dc-home-room {
+                    background: rgba(255,255,255,0.04);
+                    border: 1px solid rgba(255,255,255,0.06);
+                    border-radius: 12px;
+                    padding: 8px 18px;
+                    color: #ccc;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    transition: 0.2s;
+                }
+                #deepchat-widget .dc-home .dc-home-rooms .dc-home-room:hover {
+                    border-color: rgba(255, 107, 107, 0.3);
+                    color: #fff;
+                }
+
+                /* ===== СКРЫТАЯ АДМИН-ТОЧКА ===== */
+                #deepchat-widget .dc-admin-dot {
+                    position: fixed;
+                    bottom: 10px;
+                    right: 10px;
+                    width: 14px;
+                    height: 14px;
+                    border-radius: 50%;
+                    background: rgba(255, 0, 0, 0.05);
+                    border: 1px solid rgba(255, 0, 0, 0.03);
+                    cursor: pointer;
+                    z-index: 9999;
+                    transition: all 0.3s ease;
+                }
+                #deepchat-widget .dc-admin-dot:hover {
+                    background: rgba(255, 0, 0, 0.3);
+                    border-color: rgba(255, 0, 0, 0.3);
+                    transform: scale(1.5);
+                }
+                #deepchat-widget .dc-admin-dot.active {
+                    background: rgba(255, 140, 0, 0.3);
+                    border-color: rgba(255, 140, 0, 0.3);
+                }
+
+                /* ===== ЧАТ ВНУТРИ ===== */
+                #deepchat-widget .dc-chat-root {
+                    background: transparent;
+                    color: #eee;
+                    font-family: system-ui;
+                    padding: 10px;
+                    width: 100%;
+                    min-height: 300px;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 6px 0;
+                    border-bottom: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-header span {
+                    color: #ff6b6b;
+                    font-weight: 700;
+                    font-size: 1.1rem;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-header .dc-chat-sub {
+                    font-size: 0.6rem;
+                    color: #666;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel {
+                    background: rgba(0,0,0,0.3);
+                    border-radius: 16px;
+                    border: 1px solid rgba(255,255,255,0.06);
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    height: 55vh;
+                    min-height: 300px;
+                    margin-top: 8px;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 12px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg {
+                    background: rgba(255,255,255,0.04);
+                    border-radius: 14px;
+                    padding: 12px 14px;
+                    border: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-author {
+                    color: #ff6b6b;
+                    font-weight: 700;
+                    font-size: 0.85rem;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-time {
+                    color: #666;
+                    font-size: 0.55rem;
+                    margin-left: 6px;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-text {
+                    margin: 4px 0;
+                    word-break: break-word;
+                    font-size: 0.85rem;
+                    line-height: 1.4;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-img {
+                    max-width: 100%;
+                    max-height: 180px;
+                    border-radius: 10px;
+                    margin: 4px 0;
+                    border: 1px solid rgba(255,255,255,0.06);
+                    cursor: pointer;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-frame {
+                    margin: 6px 0 4px 0;
+                    border: 1px solid rgba(255,255,255,0.06);
+                    border-radius: 10px;
+                    overflow: hidden;
+                    background: rgba(0,0,0,0.2);
+                    width: 100%;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-frame iframe {
+                    width: 100%;
+                    height: 280px;
+                    border: none;
+                    display: block;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-buttons {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    margin: 6px 0;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-buttons .dc-btn-item {
+                    display: block;
+                    background: linear-gradient(135deg, #ff6b6b, #ff8c8c);
+                    border: none;
+                    border-radius: 10px;
+                    padding: 8px 14px;
+                    text-align: center;
+                    text-decoration: none;
+                    color: #fff;
+                    font-weight: 700;
+                    font-size: 0.85rem;
+                    cursor: pointer;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-buttons .dc-btn-item:hover {
+                    opacity: 0.9;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-hashtags {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 4px;
+                    margin: 6px 0 2px 0;
+                    padding-top: 6px;
+                    border-top: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-hashtags .dc-tag {
+                    color: #4d96ff;
+                    font-size: 0.65rem;
+                    background: rgba(255,255,255,0.04);
+                    padding: 0 10px;
+                    border-radius: 20px;
+                    border: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-actions {
+                    display: flex;
+                    gap: 6px;
+                    margin-top: 4px;
+                    flex-wrap: wrap;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-actions button {
+                    background: rgba(255,255,255,0.06);
+                    border: 1px solid rgba(255,255,255,0.06);
+                    color: #ccc;
+                    padding: 0 12px;
+                    border-radius: 40px;
+                    font-size: 0.6rem;
+                    cursor: pointer;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-actions .dc-edit-btn {
+                    background: rgba(255, 107, 107, 0.15);
+                    border-color: rgba(255, 107, 107, 0.2);
+                    color: #ff6b6b;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-actions .dc-del-btn {
+                    background: rgba(255, 68, 68, 0.15);
+                    border-color: rgba(255, 68, 68, 0.2);
+                    color: #ff6666;
+                }
+
+                /* ===== ПОЛЕ ВВОДА ===== */
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input {
+                    padding: 10px 12px;
+                    background: rgba(0,0,0,0.2);
+                    border-top: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row {
+                    display: flex;
+                    gap: 8px;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row input {
+                    flex: 1;
+                    padding: 10px 16px;
+                    background: rgba(255,255,255,0.06);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    border-radius: 40px;
+                    color: white;
+                    font-size: 0.85rem;
+                    outline: none;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row input:focus {
+                    border-color: #ff6b6b;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row button {
+                    background: linear-gradient(135deg, #ff6b6b, #ff8c8c);
+                    border: none;
+                    border-radius: 40px;
+                    padding: 0 18px;
+                    font-weight: 700;
+                    color: #fff;
+                    cursor: pointer;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row button:hover {
+                    opacity: 0.9;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-file-row {
+                    margin-top: 6px;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-file-row label {
+                    background: rgba(255,255,255,0.06);
+                    padding: 2px 14px;
+                    border-radius: 40px;
+                    font-size: 0.65rem;
+                    border: 1px solid rgba(255,255,255,0.06);
+                    cursor: pointer;
+                    display: inline-block;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-file-row .dc-preview {
+                    display: none;
+                    align-items: center;
+                    gap: 8px;
+                    background: rgba(0,0,0,0.2);
+                    padding: 2px 12px 2px 2px;
+                    border-radius: 40px;
+                    margin-top: 4px;
+                    border: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-file-row .dc-preview.show {
+                    display: flex;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-file-row .dc-preview img {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 30px;
+                    object-fit: cover;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-file-row .dc-preview .dc-preview-name {
+                    font-size: 0.65rem;
+                    max-width: 60px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+                #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-file-row .dc-preview .dc-preview-remove {
+                    background: rgba(255, 68, 68, 0.2);
+                    color: #ff6666;
+                    border: none;
+                    border-radius: 30px;
+                    padding: 0 10px;
+                    cursor: pointer;
+                }
+
+                /* ===== БЕГУЩАЯ СТРОКА ===== */
+                #deepchat-widget .dc-marquee {
+                    background: rgba(0,0,0,0.2);
+                    padding: 4px 0;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    border-radius: 6px;
+                    margin-bottom: 6px;
+                    border: 1px solid rgba(255,255,255,0.06);
+                }
+                #deepchat-widget .dc-marquee span {
+                    display: inline-block;
+                    animation: dcScroll 10s linear infinite;
+                    color: #ff6b6b;
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    padding-left: 16px;
+                }
+                @keyframes dcScroll {
+                    0% { transform: translateX(100%); }
+                    100% { transform: translateX(-100%); }
+                }
+
+                #deepchat-widget ::-webkit-scrollbar { width: 4px; }
+                #deepchat-widget ::-webkit-scrollbar-track { background: transparent; }
+                #deepchat-widget ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+                @media (max-width: 640px) {
+                    #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-frame iframe {
+                        height: 200px;
+                    }
+                    #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row input {
+                        font-size: 0.8rem;
+                        padding: 8px 14px;
+                    }
+                    #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg {
+                        padding: 10px 12px;
+                    }
+                    #deepchat-widget .dc-chat-root .dc-chat-panel {
+                        height: 50vh;
+                        min-height: 250px;
+                    }
+                    #deepchat-widget .dc-home .dc-home-title { font-size: 1.2rem; }
+                    #deepchat-widget .dc-home .dc-home-icon { font-size: 2.5rem; }
+                    #deepchat-widget .dc-menu { width: 240px; left: -260px; }
+                    #deepchat-widget .dc-menu.open { left: 0; }
+                }
+
+                @media (max-width: 400px) {
+                    #deepchat-widget .dc-chat-root .dc-chat-panel .dc-messages .dc-msg .dc-msg-frame iframe {
+                        height: 160px;
+                    }
+                    #deepchat-widget .dc-chat-root .dc-chat-panel {
+                        height: 45vh;
+                        min-height: 200px;
+                    }
+                    #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row input {
+                        font-size: 0.75rem;
+                        padding: 6px 12px;
+                    }
+                    #deepchat-widget .dc-chat-root .dc-chat-panel .dc-chat-input .dc-input-row button {
+                        padding: 0 14px;
+                        font-size: 0.8rem;
+                    }
+                    #deepchat-widget .dc-topbar .dc-title { font-size: 0.85rem; }
+                    #deepchat-widget .dc-topbar .dc-user { font-size: 0.6rem; padding: 1px 8px; }
+                }
+            </style>
+
+            <!-- ===== ТОПБАР ===== -->
+            <div class="dc-topbar">
+                <button class="dc-menu-btn" onclick="dcToggleMenu()">☰</button>
+                <div class="dc-title" onclick="dcGoHome()">Pride<span>Chat</span></div>
+                <div class="dc-user">👤 ${USER || 'Гость'}</div>
+            </div>
+
+            <!-- ===== МЕНЮ ===== -->
+            <div class="dc-menu" id="dcMenu">
+                <div class="dc-menu-header">
+                    <span>💬 Комнаты</span>
+                    <button onclick="dcToggleMenu()">✕</button>
+                </div>
+                <div class="dc-user-block">
+                    <div class="dc-avatar">🏳️‍🌈</div>
+                    <div>
+                        <div class="dc-name">${USER || 'Гость'}</div>
+                        <div class="dc-status">онлайн</div>
+                    </div>
+                </div>
+                <div class="dc-room-list" id="dcRoomList">
+                    <div style="text-align:center;color:#444;padding:16px;font-size:0.8rem;">Загрузка...</div>
+                </div>
+                <div class="dc-menu-footer">
+                    <button class="dc-create-btn" id="dcCreateBtn" onclick="dcOpenCreateRoom()">➕ Создать комнату</button>
+                </div>
+            </div>
+
+            <!-- ===== ОВЕРЛЕЙ ===== -->
+            <div class="dc-overlay" id="dcOverlay" onclick="dcToggleMenu()"></div>
+
+            <!-- ===== КОНТЕНТ ===== -->
+            <div class="dc-content" id="dcContent">
+                <div class="dc-home" id="dcHomePage">
+                    <div class="dc-home-icon">🏳️‍🌈</div>
+                    <div class="dc-home-title">Pride<span>Chat</span></div>
+                    <div class="dc-home-sub">Выберите комнату, чтобы начать общение</div>
+                    <div class="dc-home-rooms" id="dcHomeRooms"></div>
+                </div>
+                <div id="dcChatContainer" style="display:none;"></div>
+            </div>
+
+            <!-- ===== СКРЫТАЯ АДМИН-ТОЧКА ===== -->
+            <div class="dc-admin-dot" id="dcAdminDot" onclick="dcAdminLogin()"></div>
+        `;
+
+        // ================================================================
+        // ======  ФУНКЦИИ ВИДЖЕТА ======
+        // ================================================================
+
+        window.dcToggleMenu = function() {
+            const menu = document.getElementById('dcMenu');
+            const overlay = document.getElementById('dcOverlay');
+            menu.classList.toggle('open');
+            overlay.classList.toggle('show');
+        };
+
+        window.dcGoHome = function() {
+            CURRENT_ROOM = '';
+            localStorage.removeItem('dc_room_' + SITE_ID);
+            document.getElementById('dcHomePage').style.display = 'flex';
+            document.getElementById('dcChatContainer').style.display = 'none';
+            document.querySelectorAll('.dc-room').forEach(el => el.classList.remove('active'));
+            dcUpdateHomeRooms();
+            dcToggleMenu();
+        };
+
+        function dcUpdateHomeRooms() {
+            const container = document.getElementById('dcHomeRooms');
+            DB.ref('sites/' + SITE_ID + '/rooms').once('value', snap => {
+                const data = snap.val() || {};
+                const keys = Object.keys(data);
+                if (keys.length === 0) {
+                    container.innerHTML = '<div style="color:#444;font-size:0.85rem;">Нет комнат</div>';
+                    return;
+                }
+                let html = '';
+                keys.forEach(key => {
+                    const room = data[key];
+                    html += `<div class="dc-home-room" onclick="dcSelectRoom('${key}')">🏳️‍🌈 ${room.name || 'Без названия'}</div>`;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        function dcLoadRooms() {
+            DB.ref('sites/' + SITE_ID + '/rooms').orderByChild('createdAt').on('value', snap => {
+                const data = snap.val() || {};
+                const keys = Object.keys(data).sort((a, b) => (data[a].createdAt || 0) - (data[b].createdAt || 0));
+                const list = document.getElementById('dcRoomList');
+                if (keys.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;color:#444;padding:16px;font-size:0.8rem;">Нет комнат</div>';
+                    return;
+                }
+                let html = '';
+                keys.forEach(key => {
+                    const room = data[key];
+                    const active = key === CURRENT_ROOM ? 'active' : '';
+                    html += `<div class="dc-room ${active}" onclick="dcSelectRoom('${key}')">
+                        <span>🏳️‍🌈</span>
+                        <span class="dc-rname">${room.name || 'Без названия'}</span>
+                        <span class="dc-rcount">${room.count || 0}</span>
+                    </div>`;
+                });
+                list.innerHTML = html;
+                dcUpdateHomeRooms();
+
+                // Если есть CURRENT_ROOM — открываем её
+                if (CURRENT_ROOM) {
+                    // Проверяем, существует ли ещё эта комната
+                    const exists = keys.some(k => k === CURRENT_ROOM);
+                    if (exists) {
+                        dcSelectRoom(CURRENT_ROOM);
+                    } else {
+                        CURRENT_ROOM = '';
+                        localStorage.removeItem('dc_room_' + SITE_ID);
+                    }
+                }
+            });
+        }
+
+        window.dcSelectRoom = function(roomId) {
+            CURRENT_ROOM = roomId;
+            localStorage.setItem('dc_room_' + SITE_ID, roomId);
+            document.getElementById('dcHomePage').style.display = 'none';
+            document.getElementById('dcChatContainer').style.display = 'block';
+            dcLoadDeepChat(roomId);
+            document.querySelectorAll('.dc-room').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.dc-room').forEach(el => {
+                if (el.getAttribute('onclick').includes(roomId)) el.classList.add('active');
+            });
+            dcToggleMenu();
+        };
+
+        // ================================================================
+        // ======  ЧАТ ======
+        // ================================================================
+        function dcLoadDeepChat(roomId) {
+            const container = document.getElementById('dcChatContainer');
+            container.innerHTML = '';
+
+            const chatRoot = document.createElement('div');
+            chatRoot.className = 'dc-chat-root';
+            container.appendChild(chatRoot);
+
+            // Загружаем данные комнаты
+            DB.ref('sites/' + SITE_ID + '/rooms/' + roomId).once('value', snap => {
+                const room = snap.val();
+                if (!room) return;
+
+                chatRoot.innerHTML = `
+                    <div class="dc-chat-header">
+                        <span>🏳️‍🌈 ${room.name || 'PrideChat'}</span>
+                        <span class="dc-chat-sub">📝 посты</span>
+                    </div>
+                    ${room.marquee ? `<div class="dc-marquee"><span>${escapeHtml(room.marquee)}</span></div>` : ''}
+                    <div class="dc-chat-panel">
+                        <div class="dc-messages" id="dcMessages"></div>
+                        <div class="dc-chat-input">
+                            <div class="dc-input-row">
+                                <input type="text" id="dcMsgInput" placeholder="Напиши сообщение...">
+                                <button onclick="dcSendMessage()">→</button>
+                            </div>
+                            <div class="dc-file-row">
+                                <label for="dcFileInput">📎 фото</label>
+                                <input type="file" id="dcFileInput" accept="image/*" style="display:none;">
+                                <div class="dc-preview" id="dcPreview">
+                                    <img id="dcPreviewImg">
+                                    <span class="dc-preview-name" id="dcPreviewName"></span>
+                                    <button class="dc-preview-remove" onclick="dcRemoveImage()">✕</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Если в комнате есть пост — добавляем его как первое сообщение
+                if (room.postText || room.link || (room.buttons && room.buttons.length > 0)) {
+                    const postData = {
+                        nick: room.createdBy || 'Admin',
+                        text: room.postText || '📝 Новый пост',
+                        time: new Date(room.createdAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+                        timestamp: room.createdAt || Date.now(),
+                        likes: 0,
+                        img: null,
+                        link: room.link || null,
+                        marquee: room.marquee || null,
+                        buttons: room.buttons || [],
+                        hashtags: [],
+                        edited: false,
+                        isPost: true
+                    };
+                    // Сохраняем как сообщение, чтобы оно было видно в чате
+                    const msgRef = DB.ref('sites/' + SITE_ID + '/rooms/' + roomId + '/messages');
+                    msgRef.push(postData);
+                }
+
+                // Запускаем подписку на сообщения
+                const msgRef = DB.ref('sites/' + SITE_ID + '/rooms/' + roomId + '/messages');
+                let currentUser = USER;
+                let editingId = null;
+
+                window.dcSendMessage = function() {
+                    const input = document.getElementById('dcMsgInput');
+                    if (!input) return;
+                    const text = input.value.trim();
+                    const preview = document.getElementById('dcPreview');
+                    const previewImg = document.getElementById('dcPreviewImg');
+                    const pendingImage = preview && preview.classList.contains('show') ? previewImg.src : null;
+                    if (!text && !pendingImage) return;
+
+                    const data = {
+                        nick: currentUser,
+                        text: text || '📷',
+                        time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+                        timestamp: Date.now(),
+                        likes: 0,
+                        img: pendingImage || null,
+                        link: null,
+                        marquee: null,
+                        buttons: [],
+                        hashtags: [],
+                        edited: false
+                    };
+
+                    const linkMatch = (text || '').match(/(https?:\/\/[^\s]+)/);
+                    if (linkMatch) data.link = linkMatch[1];
+
+                    msgRef.push(data);
+                    input.value = '';
+                    dcRemoveImage();
+                };
+
+                window.dcRemoveImage = function() {
+                    document.getElementById('dcPreview').classList.remove('show');
+                    document.getElementById('dcFileInput').value = '';
+                };
+
+                document.getElementById('dcFileInput').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        if (file.size > 2 * 1024 * 1024) { alert('Максимум 2MB'); return; }
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            document.getElementById('dcPreviewImg').src = ev.target.result;
+                            document.getElementById('dcPreviewName').textContent = file.name.slice(0, 14);
+                            document.getElementById('dcPreview').classList.add('show');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                msgRef.orderByChild('timestamp').on('value', snap => {
+                    const messagesDiv = document.getElementById('dcMessages');
+                    if (!messagesDiv) return;
+                    messagesDiv.innerHTML = '';
+                    snap.forEach(s => {
+                        const m = s.val();
+                        m.id = s.key;
+                        renderMessage(m);
+                    });
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                });
+
+                function renderMessage(m) {
+                    const messagesDiv = document.getElementById('dcMessages');
+                    if (!messagesDiv) return;
+                    const div = document.createElement('div');
+                    div.className = 'dc-msg';
+
+                    let marqueeHtml = '';
+                    if (m.marquee) {
+                        marqueeHtml = `<div class="dc-marquee"><span>${escapeHtml(m.marquee)}</span></div>`;
+                    }
+
+                    let textHtml = escapeHtml(m.text || '');
+                    const linkMatch = (m.text || '').match(/(https?:\/\/[^\s]+)/);
+                    if (linkMatch && m.link) {
+                        textHtml = textHtml.replace(linkMatch[1], `<span style="color:#555;font-size:0.75rem;">${linkMatch[1]}</span>`);
+                    }
+
+                    let imgHtml = '';
+                    if (m.img) {
+                        imgHtml = `<img class="dc-msg-img" src="${m.img}" onclick="window.open(this.src)">`;
+                    }
+
+                    let buttonsHtml = '';
+                    if (m.buttons && m.buttons.length > 0) {
+                        buttonsHtml = '<div class="dc-msg-buttons">';
+                        m.buttons.forEach(btn => {
+                            if (btn.url) {
+                                buttonsHtml += `<a href="${escapeHtml(btn.url)}" target="_blank" class="dc-btn-item">${escapeHtml(btn.label || '🔗 Перейти')}</a>`;
+                            }
+                        });
+                        buttonsHtml += '</div>';
+                    }
+
+                    let frameHtml = '';
+                    if (m.link) {
+                        frameHtml = `<div class="dc-msg-frame"><iframe src="${m.link}" sandbox="allow-scripts allow-same-origin allow-popups"></iframe></div>`;
+                    }
+
+                    let hashtagsHtml = '';
+                    if (m.hashtags && m.hashtags.length > 0) {
+                        hashtagsHtml = '<div class="dc-msg-hashtags">';
+                        m.hashtags.forEach(tag => {
+                            hashtagsHtml += `<span class="dc-tag">${escapeHtml(tag)}</span>`;
+                        });
+                        hashtagsHtml += '</div>';
+                    }
+
+                    let actionsHtml = `
+                        <button onclick="dcLikeMsg('${m.id}')">👍 ${m.likes || 0}</button>
+                        <button onclick="dcReplyMsg('${m.id}','${escapeHtml(m.nick)}')">💬 ответ</button>
+                    `;
+                    if (m.nick === currentUser) {
+                        actionsHtml += `<button class="dc-edit-btn" onclick="dcOpenEdit('${m.id}')">✏️ ред.</button>`;
+                    }
+                    if (m.nick === currentUser || IS_ADMIN) {
+                        actionsHtml += `<button class="dc-del-btn" onclick="dcDeleteMsg('${m.id}')">🗑</button>`;
+                    }
+
+                    div.innerHTML = `
+                        ${marqueeHtml}
+                        <div>
+                            <span class="dc-msg-author">${escapeHtml(m.nick)}</span>
+                            <span class="dc-msg-time">${m.time || ''}</span>
+                            ${m.edited ? ' <span style="color:#666;font-size:0.5rem;">(ред.)</span>' : ''}
+                            ${m.isPost ? ' <span style="color:#ff6b6b;font-size:0.5rem;">📌</span>' : ''}
+                        </div>
+                        <div class="dc-msg-text">${textHtml}</div>
+                        ${imgHtml}
+                        ${buttonsHtml}
+                        ${frameHtml}
+                        ${hashtagsHtml}
+                        <div class="dc-msg-actions">${actionsHtml}</div>
+                    `;
+
+                    messagesDiv.appendChild(div);
+                }
+
+                window.dcLikeMsg = function(id) {
+                    const key = `liked_${id}_${currentUser}`;
+                    if (localStorage.getItem(key)) return;
+                    msgRef.child(id + '/likes').transaction(v => (v || 0) + 1);
+                    localStorage.setItem(key, 'true');
+                };
+
+                window.dcReplyMsg = function(id, nick) {
+                    const input = document.getElementById('dcMsgInput');
+                    if (input) {
+                        input.value = `@${nick} `;
+                        input.focus();
+                    }
+                };
+
+                window.dcDeleteMsg = function(id) {
+                    if (!confirm('Удалить этот пост?')) return;
+                    msgRef.child(id).remove();
+                };
+
+                window.dcOpenEdit = function(id) {
+                    editingId = id;
+                    const modal = document.createElement('div');
+                    modal.className = 'dc-edit-modal open';
+                    modal.id = 'dcEditModal';
+                    modal.innerHTML = `
+                        <div class="dc-edit-box" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;justify-content:center;align-items:center;padding:16px;">
+                            <div style="background:#1a1a2a;border-radius:16px;padding:20px;max-width:500px;width:100%;border:1px solid #333;max-height:90vh;overflow-y:auto;">
+                                <h2 style="color:#ff8c00;font-size:1.1rem;margin-bottom:8px;">✏️ Редактировать</h2>
+                                <input type="text" id="dcEditMarquee" placeholder="Бегущая строка" style="width:100%;padding:10px;background:#0f0f1a;border:1px solid #333;border-radius:8px;color:white;margin-bottom:8px;font-size:0.85rem;">
+                                <textarea id="dcEditText" placeholder="Текст" style="width:100%;padding:10px;background:#0f0f1a;border:1px solid #333;border-radius:8px;color:white;margin-bottom:8px;font-size:0.85rem;min-height:50px;resize:vertical;"></textarea>
+                                <input type="url" id="dcEditLink" placeholder="Ссылка (iframe)" style="width:100%;padding:10px;background:#0f0f1a;border:1px solid #333;border-radius:8px;color:white;margin-bottom:8px;font-size:0.85rem;">
+                                <input type="text" id="dcEditHashtags" placeholder="#hashtags" style="width:100%;padding:10px;background:#0f0f1a;border:1px solid #333;border-radius:8px;color:white;margin-bottom:8px;font-size:0.85rem;">
+                                <div style="margin:6px 0 4px 0;color:#888;font-size:0.7rem;">🔘 Кнопки</div>
+                                <div id="dcEditButtonsContainer"></div>
+                                <button onclick="dcAddButtonField()" style="background:#222;color:#ff8c00;border:1px solid #333;border-radius:30px;padding:4px 14px;cursor:pointer;font-size:0.7rem;margin-top:4px;">➕ Кнопку</button>
+                                <div style="display:flex;gap:8px;margin-top:10px;">
+                                    <button onclick="dcSaveEdit()" style="background:#ff8c00;color:#0b0b0f;border:none;padding:8px;border-radius:40px;font-weight:700;flex:1;cursor:pointer;">💾 Сохранить</button>
+                                    <button onclick="dcCloseEdit()" style="background:#6a1a1a;color:#ff8888;border:none;padding:8px;border-radius:40px;font-weight:700;flex:1;cursor:pointer;">✕ Отмена</button>
+                                </div>
+                                <button onclick="dcDeletePost()" style="background:#6a1a1a;color:#ff8888;border:none;padding:6px;border-radius:40px;margin-top:8px;cursor:pointer;width:100%;font-size:0.8rem;">🗑 Удалить пост</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+
+                    msgRef.child(id).once('value', snap => {
+                        const m = snap.val();
+                        if (!m) return;
+                        document.getElementById('dcEditMarquee').value = m.marquee || '';
+                        document.getElementById('dcEditText').value = m.text || '';
+                        document.getElementById('dcEditLink').value = m.link || '';
+                        document.getElementById('dcEditHashtags').value = (m.hashtags || []).join(' ');
+
+                        const container = document.getElementById('dcEditButtonsContainer');
+                        container.innerHTML = '';
+                        const btns = m.buttons || [];
+                        btns.forEach(btn => dcAddButtonField(btn.label, btn.url));
+                        if (btns.length === 0) dcAddButtonField('', '');
+                    });
+                };
+
+                window.dcAddButtonField = function(label = '', url = '') {
+                    const container = document.getElementById('dcEditButtonsContainer');
+                    const div = document.createElement('div');
+                    div.className = 'dc-btn-group';
+                    div.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;align-items:center;';
+                    div.innerHTML = `
+                        <input class="dc-btn-label" placeholder="Текст" value="${escapeHtml(label)}" style="flex:1;padding:6px 10px;background:#0f0f1a;border:1px solid #333;border-radius:6px;color:white;font-size:0.8rem;">
+                        <input class="dc-btn-url" placeholder="Ссылка" value="${escapeHtml(url)}" style="flex:2;padding:6px 10px;background:#0f0f1a;border:1px solid #333;border-radius:6px;color:white;font-size:0.8rem;">
+                        <button onclick="dcRemoveButtonField(this)" style="background:#4a1a1a;color:#ff6666;border:none;border-radius:30px;padding:2px 10px;cursor:pointer;font-size:0.7rem;">✕</button>
+                    `;
+                    container.appendChild(div);
+                };
+
+                window.dcRemoveButtonField = function(btn) {
+                    const group = btn.parentElement;
+                    if (document.getElementById('dcEditButtonsContainer').children.length > 1) {
+                        group.remove();
+                    } else {
+                        group.querySelector('.dc-btn-label').value = '';
+                        group.querySelector('.dc-btn-url').value = '';
+                    }
+                };
+
+                window.dcSaveEdit = function() {
+                    if (!editingId) return;
+
+                    const marquee = document.getElementById('dcEditMarquee').value.trim();
+                    const text = document.getElementById('dcEditText').value.trim();
+                    const link = document.getElementById('dcEditLink').value.trim();
+                    const hashtagsRaw = document.getElementById('dcEditHashtags').value.trim();
+                    const hashtags = hashtagsRaw ? hashtagsRaw.split(/\s+/).filter(t => t.startsWith('#')) : [];
+
+                    const buttons = [];
+                    document.querySelectorAll('#dcEditButtonsContainer .dc-btn-group').forEach(g => {
+                        const label = g.querySelector('.dc-btn-label').value.trim();
+                        const url = g.querySelector('.dc-btn-url').value.trim();
+                        if (url) buttons.push({ label: label || '🔗 Перейти', url });
+                    });
+
+                    const updates = {
+                        marquee: marquee || null,
+                        text: text || '📝',
+                        link: link || null,
+                        buttons: buttons,
+                        hashtags: hashtags,
+                        edited: true,
+                        editedAt: Date.now()
+                    };
+
+                    msgRef.child(editingId).update(updates);
+                    dcCloseEdit();
+                };
+
+                window.dcDeletePost = function() {
+                    if (!editingId) return;
+                    if (confirm('Удалить пост навсегда?')) {
+                        msgRef.child(editingId).remove();
+                        dcCloseEdit();
+                    }
+                };
+
+                window.dcCloseEdit = function() {
+                    const modal = document.getElementById('dcEditModal');
+                    if (modal) modal.remove();
+                    editingId = null;
+                };
+
+                document.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'dcMsgInput') {
+                        dcSendMessage();
+                    }
+                });
+
+                function escapeHtml(str) {
+                    if (!str) return '';
+                    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+                }
+
+                const style = document.createElement('style');
+                style.textContent = `@keyframes dcScroll { 0% { transform:translateX(100%); } 100% { transform:translateX(-100%); } }`;
+                document.head.appendChild(style);
+
+                console.log('💬 Чат загружен для комнаты:', roomId);
+            });
+        }
+
+        // ================================================================
+        // ======  ЗАПУСК ======
+        // ================================================================
+        dcLoadRooms();
+        if (IS_ADMIN) {
+            document.getElementById('dcAdminDot').classList.add('active');
+            document.getElementById('dcCreateBtn').classList.add('show');
+            document.getElementById('dcCreateBtnHeader').classList.remove('hidden');
+        }
+        console.log('💬 PrideChat загружен!');
+        console.log('🏳️‍🌈 LGBTQ+ сообщество');
+        console.log('👤 Пользователь:', USER || 'не задан');
+        console.log('🏴‍☠️ Админ-пароль: 12345 (точка в правом нижнем углу)');
+    })();
+    </script>
+
+</body>
+</html>
