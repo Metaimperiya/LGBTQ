@@ -202,6 +202,93 @@
         .btn-create:hover { transform: scale(1.04); }
         .btn-create.hidden { display: none; }
 
+        /* ===== ФОРМА СОЗДАНИЯ (ПРЯМО НА СТРАНИЦЕ) ===== */
+        .create-form {
+            max-width: 820px;
+            margin: 0 auto 16px;
+            padding: 0 16px;
+            display: none;
+        }
+        .create-form.open { display: block; }
+        .create-form .form-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 20px;
+        }
+        .create-form .form-box input,
+        .create-form .form-box textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-family: inherit;
+            outline: none;
+        }
+        .create-form .form-box input:focus,
+        .create-form .form-box textarea:focus { border-color: #ff6b6b; }
+        .create-form .form-box textarea { min-height: 60px; resize: vertical; }
+        .create-form .form-box .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .create-form .form-box .btn-row button {
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            flex: 1;
+        }
+        .create-form .form-box .btn-row .btn-publish {
+            background: linear-gradient(90deg, #ff0055, #ff8800, #ffee00, #00ff99, #00bbff, #7a00ff);
+            background-size: 300% 300%;
+            animation: move 5s linear infinite;
+            color: #000;
+        }
+        .create-form .form-box .btn-row .btn-cancel {
+            background: #2a2a2a;
+            color: #aaa;
+        }
+        .create-form .form-box .btn-row .btn-cancel:hover { background: #3a3a3a; }
+        .create-form .form-box .btn-group-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .create-form .form-box .btn-group-row input { margin-bottom: 0; flex: 1; }
+        .create-form .form-box .btn-group-row .btn-remove {
+            background: #4a1a1a;
+            color: #ff6666;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .create-form .form-box .add-btn {
+            background: #222;
+            color: #ff6b6b;
+            border: 1px solid #333;
+            border-radius: 30px;
+            padding: 4px 14px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+        .create-form .form-box .label-small {
+            color: #888;
+            font-size: 0.7rem;
+            margin: 6px 0 4px 0;
+        }
+
         /* ===== НИЖНИЙ ЧАТ ===== */
         .widget-wrap-bottom {
             max-width: 820px;
@@ -262,43 +349,6 @@
         }
         .dc-admin-dot:hover { background: rgba(255,0,0,0.3); border-color: rgba(255,0,0,0.3); transform: scale(1.5); }
         .dc-admin-dot.active { background: rgba(255,140,0,0.3); border-color: rgba(255,140,0,0.3); }
-
-        .dc-edit-modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
-        .dc-edit-modal.open { display: flex; }
-        .dc-edit-modal .dc-edit-box {
-            background: #1a1a2a;
-            border-radius: 16px;
-            padding: 20px;
-            max-width: 520px;
-            width: 100%;
-            border: 1px solid #333;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .dc-edit-modal .dc-edit-box h2 { color: #ff8c00; font-size: 1.1rem; margin-bottom: 8px; }
-        .dc-edit-modal .dc-edit-box input, .dc-edit-modal .dc-edit-box textarea {
-            width: 100%; padding: 10px; background: #0f0f1a; border: 1px solid #333; border-radius: 8px; color: white; margin-bottom: 8px; font-size: 0.85rem; font-family: inherit;
-        }
-        .dc-edit-modal .dc-edit-box textarea { min-height: 50px; resize: vertical; }
-        .dc-edit-modal .dc-edit-box .dc-edit-label { color: #888; font-size: 0.7rem; margin: 6px 0 4px 0; }
-        .dc-edit-modal .dc-edit-box .dc-btn-group { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
-        .dc-edit-modal .dc-edit-box .dc-btn-group input { margin-bottom: 0; flex: 1; }
-        .dc-edit-modal .dc-edit-box .dc-btn-group .dc-btn-remove { background: #4a1a1a; color: #ff6666; border: none; border-radius: 30px; padding: 4px 10px; cursor: pointer; font-size: 0.7rem; }
-        .dc-edit-modal .dc-edit-box .dc-add-btn { background: #222; color: #ff8c00; border: 1px solid #333; border-radius: 30px; padding: 4px 14px; cursor: pointer; font-size: 0.7rem; margin-top: 4px; }
-        .dc-edit-modal .dc-edit-box .dc-edit-actions { display: flex; gap: 8px; margin-top: 10px; }
-        .dc-edit-modal .dc-edit-box .dc-edit-actions button { padding: 8px; border-radius: 40px; border: none; font-weight: 700; flex: 1; cursor: pointer; }
-        .dc-edit-modal .dc-edit-box .dc-edit-actions .dc-save-btn { background: #ff8c00; color: #0b0b0f; }
-        .dc-edit-modal .dc-edit-box .dc-edit-actions .dc-cancel-btn { background: #6a1a1a; color: #ff8888; }
-        .dc-edit-modal .dc-edit-box .dc-delete-btn { background: #6a1a1a; color: #ff8888; border: none; padding: 6px; border-radius: 40px; margin-top: 8px; cursor: pointer; width: 100%; font-size: 0.8rem; }
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
@@ -365,25 +415,24 @@
 
         <!-- ===== КНОПКА СОЗДАНИЯ ===== -->
         <div class="create-wrapper">
-            <button class="btn-create" id="dcCreateBtnHeader" onclick="dcOpenCreateModal()">➕ Создать объявление</button>
+            <button class="btn-create" id="dcCreateBtnHeader" onclick="dcOpenForm()">➕ Создать объявление</button>
         </div>
 
-        <!-- ===== МОДАЛКА ===== -->
-        <div class="dc-edit-modal" id="dcCreateModal">
-            <div class="dc-edit-box">
-                <h2>📝 Создать объявление</h2>
-                <input type="text" id="dcCreateTitle" placeholder="Заголовок">
-                <input type="text" id="dcCreateDesc" placeholder="Описание (скрыто для SEO)">
-                <input type="text" id="dcCreateMarquee" placeholder="Бегущая строка">
-                <textarea id="dcCreateText" placeholder="Текст объявления"></textarea>
-                <input type="url" id="dcCreateLink" placeholder="Ссылка (iframe)">
-                <input type="text" id="dcCreateHashtags" placeholder="#hashtags через пробел">
-                <div class="dc-edit-label">🔘 Кнопки</div>
-                <div id="dcCreateButtonsContainer"></div>
-                <button class="dc-add-btn" onclick="dcAddCreateButton()">➕ Кнопку</button>
-                <div class="dc-edit-actions">
-                    <button class="dc-save-btn" onclick="dcSaveCreate()">💾 Опубликовать</button>
-                    <button class="dc-cancel-btn" onclick="dcCloseCreateModal()">✕ Отмена</button>
+        <!-- ===== ФОРМА СОЗДАНИЯ ===== -->
+        <div class="create-form" id="createForm">
+            <div class="form-box">
+                <input type="text" id="cfTitle" placeholder="Заголовок">
+                <input type="text" id="cfDesc" placeholder="Описание (скрыто для SEO)">
+                <input type="text" id="cfMarquee" placeholder="Бегущая строка">
+                <textarea id="cfText" placeholder="Текст объявления"></textarea>
+                <input type="url" id="cfLink" placeholder="Ссылка (iframe)">
+                <input type="text" id="cfHashtags" placeholder="#hashtags через пробел">
+                <div class="label-small">🔘 Кнопки</div>
+                <div id="cfButtonsContainer"></div>
+                <button class="add-btn" onclick="cfAddButton()">➕ Кнопку</button>
+                <div class="btn-row">
+                    <button class="btn-publish" onclick="cfPublish()">💾 Опубликовать</button>
+                    <button class="btn-cancel" onclick="cfClose()">✕ Отмена</button>
                 </div>
             </div>
         </div>
@@ -465,6 +514,7 @@
                 if (data) {
                     showPost(data);
                     document.getElementById('dcCreateBtnHeader').classList.add('hidden');
+                    document.getElementById('createForm').classList.remove('open');
                 } else {
                     document.getElementById('dcCreateBtnHeader').classList.remove('hidden');
                     document.getElementById('postAnnouncement').classList.remove('show');
@@ -479,11 +529,9 @@
             document.getElementById('postMarquee').innerHTML = data.marquee ? `<span>${escapeHtml(data.marquee)}</span>` : '';
             document.getElementById('postText').textContent = data.text || '';
 
-            // Фрейм
             const frame = document.getElementById('postFrame');
             frame.innerHTML = data.link ? `<iframe src="${escapeHtml(data.link)}" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>` : '';
 
-            // Кнопки
             const btns = document.getElementById('postButtons');
             btns.innerHTML = '';
             if (data.buttons && data.buttons.length > 0) {
@@ -499,7 +547,6 @@
                 });
             }
 
-            // Хэштеги
             const tags = document.getElementById('postHashtags');
             tags.innerHTML = '';
             if (data.hashtags && data.hashtags.length > 0) {
@@ -516,60 +563,63 @@
         }
 
         // ================================================================
-        // ======  СОЗДАНИЕ ОБЪЯВЛЕНИЯ ======
+        // ======  ФОРМА СОЗДАНИЯ ======
         // ================================================================
-        window.dcOpenCreateModal = function() {
+        window.dcOpenForm = function() {
             if (!IS_ADMIN) { alert('⛔ Только для админа!'); return; }
-            document.getElementById('dcCreateModal').classList.add('open');
-            document.getElementById('dcCreateTitle').value = '';
-            document.getElementById('dcCreateDesc').value = '';
-            document.getElementById('dcCreateMarquee').value = '';
-            document.getElementById('dcCreateText').value = '';
-            document.getElementById('dcCreateLink').value = '';
-            document.getElementById('dcCreateHashtags').value = '';
-            document.getElementById('dcCreateButtonsContainer').innerHTML = '';
-            dcAddCreateButton();
+            document.getElementById('createForm').classList.add('open');
+            document.getElementById('dcCreateBtnHeader').classList.add('hidden');
+            document.getElementById('cfTitle').value = '';
+            document.getElementById('cfDesc').value = '';
+            document.getElementById('cfMarquee').value = '';
+            document.getElementById('cfText').value = '';
+            document.getElementById('cfLink').value = '';
+            document.getElementById('cfHashtags').value = '';
+            document.getElementById('cfButtonsContainer').innerHTML = '';
+            cfAddButton();
         };
 
-        window.dcCloseCreateModal = function() {
-            document.getElementById('dcCreateModal').classList.remove('open');
+        window.cfClose = function() {
+            document.getElementById('createForm').classList.remove('open');
+            document.getElementById('dcCreateBtnHeader').classList.remove('hidden');
+            loadAnnouncement();
         };
 
-        window.dcAddCreateButton = function(label = '', url = '') {
-            const container = document.getElementById('dcCreateButtonsContainer');
+        window.cfAddButton = function(label = '', url = '') {
+            const container = document.getElementById('cfButtonsContainer');
             const div = document.createElement('div');
-            div.className = 'dc-btn-group';
+            div.className = 'btn-group-row';
             div.innerHTML = `
-                <input class="dc-btn-label" placeholder="Текст кнопки" value="${escapeHtml(label)}">
-                <input class="dc-btn-url" placeholder="Ссылка" value="${escapeHtml(url)}">
-                <button class="dc-btn-remove" onclick="dcRemoveCreateButton(this)">✕</button>
+                <input class="cf-btn-label" placeholder="Текст кнопки" value="${escapeHtml(label)}">
+                <input class="cf-btn-url" placeholder="Ссылка" value="${escapeHtml(url)}">
+                <button class="btn-remove" onclick="cfRemoveButton(this)">✕</button>
             `;
             container.appendChild(div);
         };
 
-        window.dcRemoveCreateButton = function(btn) {
+        window.cfRemoveButton = function(btn) {
             const group = btn.parentElement;
-            if (document.getElementById('dcCreateButtonsContainer').children.length > 1) {
+            if (document.getElementById('cfButtonsContainer').children.length > 1) {
                 group.remove();
             } else {
-                group.querySelector('.dc-btn-label').value = '';
-                group.querySelector('.dc-btn-url').value = '';
+                group.querySelector('.cf-btn-label').value = '';
+                group.querySelector('.cf-btn-url').value = '';
             }
         };
 
-        window.dcSaveCreate = function() {
-            const title = document.getElementById('dcCreateTitle').value.trim() || '📢 Без заголовка';
-            const description = document.getElementById('dcCreateDesc').value.trim() || '';
-            const marquee = document.getElementById('dcCreateMarquee').value.trim() || '';
-            const text = document.getElementById('dcCreateText').value.trim() || '';
-            const link = document.getElementById('dcCreateLink').value.trim() || '';
-            const hashtagsRaw = document.getElementById('dcCreateHashtags').value.trim();
+        window.cfPublish = function() {
+            const title = document.getElementById('cfTitle').value.trim() || '📢 Без заголовка';
+            const description = document.getElementById('cfDesc').value.trim() || '';
+            const marquee = document.getElementById('cfMarquee').value.trim() || '';
+            const text = document.getElementById('cfText').value.trim() || '';
+            const link = document.getElementById('cfLink').value.trim() || '';
+            const hashtagsRaw = document.getElementById('cfHashtags').value.trim();
             const hashtags = hashtagsRaw ? hashtagsRaw.split(/\s+/).filter(t => t.startsWith('#')) : [];
 
             const buttons = [];
-            document.querySelectorAll('#dcCreateButtonsContainer .dc-btn-group').forEach(g => {
-                const label = g.querySelector('.dc-btn-label').value.trim();
-                const url = g.querySelector('.dc-btn-url').value.trim();
+            document.querySelectorAll('#cfButtonsContainer .btn-group-row').forEach(g => {
+                const label = g.querySelector('.cf-btn-label').value.trim();
+                const url = g.querySelector('.cf-btn-url').value.trim();
                 if (url) buttons.push({ label: label || '🔗 Перейти', url });
             });
 
@@ -587,8 +637,8 @@
 
             DB.ref('sites/' + SITE_ID + '/announcement').set(data)
                 .then(() => {
-                    dcCloseCreateModal();
                     alert('✅ Объявление опубликовано!');
+                    document.getElementById('createForm').classList.remove('open');
                     loadAnnouncement();
                 })
                 .catch(err => alert('❌ ' + err.message));
