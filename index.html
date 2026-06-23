@@ -115,36 +115,17 @@
             margin-bottom: 12px;
         }
 
-        /* ===== КНОПКА СОЗДАНИЯ ===== */
-        .create-wrapper {
+        /* ===== ОБЪЯВЛЕНИЕ ===== */
+        .announcement-block {
             max-width: 820px;
-            margin: 0 auto 10px;
-            text-align: center;
+            margin: 0 auto 16px;
+            padding: 0 16px;
         }
-        .btn-create {
-            background: linear-gradient(90deg, #ff0055, #ff8800, #ffee00, #00ff99, #00bbff, #7a00ff);
-            background-size: 300% 300%;
-            animation: move 5s linear infinite;
-            border: none;
-            color: #000;
-            padding: 10px 28px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin-bottom: 10px;
-        }
-        .btn-create:hover { transform: scale(1.04); }
-        .btn-create.hidden { display: none; }
-
-        /* ===== ПОСТ-ОБЪЯВЛЕНИЕ ===== */
         .post-announcement {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 20px;
             padding: 16px 20px;
-            margin-bottom: 16px;
             display: none;
         }
         .post-announcement.show { display: block; }
@@ -197,19 +178,36 @@
         .post-announcement .post-hashtags { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0 4px 0; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); }
         .post-announcement .post-hashtags .post-tag { color: #4d96ff; font-size: 0.7rem; background: rgba(255,255,255,0.04); padding: 0 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); }
 
-        .widget-wrap-top {
+        /* ===== КНОПКА СОЗДАНИЯ ===== */
+        .create-wrapper {
             max-width: 820px;
-            margin: 0 auto 20px;
+            margin: 0 auto 10px;
             padding: 0 16px;
-            display: none;
+            text-align: center;
         }
-        .widget-wrap-top.open { display: block; }
+        .btn-create {
+            background: linear-gradient(90deg, #ff0055, #ff8800, #ffee00, #00ff99, #00bbff, #7a00ff);
+            background-size: 300% 300%;
+            animation: move 5s linear infinite;
+            border: none;
+            color: #000;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 10px;
+        }
+        .btn-create:hover { transform: scale(1.04); }
+        .btn-create.hidden { display: none; }
+
+        /* ===== НИЖНИЙ ЧАТ ===== */
         .widget-wrap-bottom {
             max-width: 820px;
             margin: 10px auto 30px;
             padding: 0 16px;
         }
-
         .widget-card {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.06);
@@ -352,15 +350,17 @@
         <h2 class="section-title">Why Join Our Community</h2>
         <p class="section-sub">Connect with people, share experiences and discover new friendships.</p>
 
-        <!-- ===== ОБЪЯВЛЕНИЕ (ПОСТ) ===== -->
-        <div class="post-announcement" id="postAnnouncement">
-            <div class="post-title" id="postTitle">📢 Заголовок</div>
-            <div class="post-desc" id="postDesc">Описание</div>
-            <div class="post-marquee" id="postMarquee"><span>🏳️‍🌈 Добро пожаловать!</span></div>
-            <div class="post-text" id="postText">Текст объявления</div>
-            <div class="post-frame" id="postFrame"></div>
-            <div class="post-buttons" id="postButtons"></div>
-            <div class="post-hashtags" id="postHashtags"></div>
+        <!-- ===== ОБЪЯВЛЕНИЕ ===== -->
+        <div class="announcement-block">
+            <div class="post-announcement" id="postAnnouncement">
+                <div class="post-title" id="postTitle">📢 Заголовок</div>
+                <div class="post-desc" id="postDesc">Описание</div>
+                <div class="post-marquee" id="postMarquee"><span>🏳️‍🌈 Добро пожаловать!</span></div>
+                <div class="post-text" id="postText">Текст объявления</div>
+                <div class="post-frame" id="postFrame"></div>
+                <div class="post-buttons" id="postButtons"></div>
+                <div class="post-hashtags" id="postHashtags"></div>
+            </div>
         </div>
 
         <!-- ===== КНОПКА СОЗДАНИЯ ===== -->
